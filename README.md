@@ -3,9 +3,9 @@ Extension for Chrome browser that lets you use locally run large language model 
 
 # What is an AI Form Assistant
 
-Local-first Chrome extension that uses Ollama to intelligently assist with form filling, job applications, CRM workflows, and long-form text inputs while preserving privacy and avoiding interference with browser autofill/password managers.
+In daily use large language models (LLM) are replacing browsers and search engines as the main tool to interact with the surrounding world. 
 
----
+ChromeGPT is a local-first Chrome extension that uses Ollama to intelligently assist with form filling, job applications, CRM workflows, and long-form text inputs while preserving privacy and avoiding interference with browser autofill/password managers.
 
 # Vision
 
