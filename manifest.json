@@ -1,19 +1,18 @@
 {
-  "manifest_version": 3,
   "name": "ChromeGPT",
   "version": "1.0",
   "description": "A local-first Chrome extension for AI form assistance using Ollama.",
   "permissions": [
     "activeTab",
-    "storage",
-    "tabs", // Add the missing permission
-    "https://cdn.jsdelivr.net/npm/ollama@2.5.3/dist/" // Add this line to allow access to Ollama CDN
+    "storage"
   ],
   "action": {
     "default_popup": "popup.html",
     "default_icon": {
-      "128": "icons/ai_form_assistant_icon.png",
-      "256": "icons/ai_form_assistant_icon.png"
+      "16": "icons/ai_form_assistant_icon.png",
+      "48": "icons/ai_form_assistant_icon.png",
+      "96": "icons/ai_form_assistant_icon.png",
+      "128": "icons/ai_form_assistant_icon.png"
     }
   },
   "background": {

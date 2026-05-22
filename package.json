@@ -2,7 +2,7 @@
   "name": "ChromeGPT",
   "version": "1.0",
   "description": "A local-first Chrome extension for AI form assistance using Ollama.",
-  "main": "dist/background.js", // Path to the compiled background script file
+  "main": "src/background.js", // Path to the compiled background script file
   "scripts": {
     "build": "npm run build:prod",
     "package": "mkdir dist && cd dist && npm install --production && cp ../chromeGPT/* . && zip -r ../stable/ChromeGPT.zip .""
