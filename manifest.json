@@ -1,5 +1,5 @@
 {
-  "manifest_version": 2,
+  "manifest_version": 3,
   "name": "ChromeGPT",
   "version": "1.0",
   "description": "A local-first Chrome extension for AI form assistance using Ollama.",
@@ -14,7 +14,8 @@
   },
   "permissions": [
     "activeTab",
-    "tab",
-    "storage"
+    "storage",
+    "tabs", // Add the missing permission
+    "https://cdn.jsdelivr.net/npm/ollama@2.5.3/dist/" // Add this line to allow access to Ollama CDN
   ]
 }
