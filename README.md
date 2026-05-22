@@ -1,6 +1,8 @@
 # ChromeGPT
 Extension for Chrome browser that lets you use locally run large language model to fill in form fields
 
+HOX: The extension is still work in progress and we are testing vibecoding using Continue.dev Visual Studio Code extension with Qwen2.6-coder running on local Ollama 
+
 # What is an AI Form Assistant
 
 In daily use large language models (LLM) are replacing browsers and search engines as the main tool to interact with the surrounding world. 
@@ -73,11 +75,8 @@ Uses local Ollama instance:
 http://localhost:11434
 
 Supported models:
-- llama3
-- qwen2.5
-- mistral
-- phi4
-- gemma
+- llama3.2
+- qwen2.6
 
 ---
 
