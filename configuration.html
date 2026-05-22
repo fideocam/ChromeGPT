@@ -3,19 +3,61 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ChromeGPT UI</title>
+  <title>ChromeGPT Settings</title>
+  <style>
+    body {
+      max-width: 760px;
+      margin: 24px auto;
+      font-family: Arial, sans-serif;
+      line-height: 1.4;
+    }
+
+    label {
+      display: block;
+      margin-top: 14px;
+      font-weight: 700;
+    }
+
+    input,
+    textarea {
+      box-sizing: border-box;
+      width: 100%;
+      margin-top: 6px;
+      padding: 8px;
+      font: inherit;
+    }
+
+    textarea {
+      min-height: 240px;
+      resize: vertical;
+    }
+
+    button {
+      margin-top: 14px;
+      padding: 8px 12px;
+      cursor: pointer;
+    }
+
+    #status {
+      min-height: 24px;
+    }
+  </style>
 </head>
 <body>
-  <h1>ChromeGPT</h1>
-  <label for="cv">Paste CV:</label><br>
-  <textarea id="cv" name="cv"></textarea><br>
+  <h1>ChromeGPT Settings</h1>
 
-  <label for="prompt">Adjust System Prompt (optional):</label><br>
-  <input type="text" id="prompt" name="prompt">
+  <label for="ollamaHost">Ollama host</label>
+  <input type="url" id="ollamaHost" name="ollamaHost" placeholder="http://localhost:11434">
 
-  <button onclick="submitForm()">Submit</button>
+  <label for="model">Model</label>
+  <input type="text" id="model" name="model" placeholder="llama3.2">
 
-  <script src="src/background.js"></script>
-  <script src="ollama/ollama.min.js"></script>
+  <label for="profileText">Profile context</label>
+  <textarea id="profileText" name="profileText" placeholder="Paste your resume, profile, CRM context, or reusable notes here."></textarea>
+
+  <button id="saveSettings" type="button">Save Settings</button>
+  <p id="status"></p>
+
+  <script src="src/form.js"></script>
 </body>
 </html>

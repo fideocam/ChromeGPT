@@ -1,13 +1,11 @@
 {
-  "name": "ChromeGPT",
-  "version": "1.0",
+  "name": "chromegpt",
+  "version": "1.0.0",
   "description": "A local-first Chrome extension for AI form assistance using Ollama.",
-  "main": "src/background.js", // Path to the compiled background script file
+  "private": true,
+  "main": "src/background.js",
   "scripts": {
-    "build": "npm run build:prod",
-    "package": "mkdir dist && cd dist && npm install --production && cp ../chromeGPT/* . && zip -r ../stable/ChromeGPT.zip .""
+    "validate": "node --check src/background.js && node --check src/contentScript.js && node --check src/popup.js && node --check src/form.js"
   },
-  "dependencies": {
-    // Add any required dependencies here
-  }
+  "dependencies": {}
 }
