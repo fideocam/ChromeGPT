@@ -5,7 +5,7 @@
   "private": true,
   "main": "src/background.js",
   "scripts": {
-    "validate": "node --check src/background.js && node --check src/contentScript.js && node --check src/popup.js && node --check src/form.js"
+    "validate": "node --check src/background.js && node --check src/contentScript.js && node --check src/popup.js && node --check src/form.js && node --check src/chat.js"
   },
   "dependencies": {}
 }

@@ -6,20 +6,59 @@
     "input[type='text']",
     "input[type='email']",
     "input[type='search']",
-    "input[type='url']"
+    "input[type='url']",
+    "[contenteditable='true']",
+    "[role='textbox']"
   ].join(",");
+  let contextField = null;
+  let lastFocusedField = null;
 
   if (window.__chromeGptAssistantReady) {
-    attachAssistantButtons();
     return;
   }
 
   window.__chromeGptAssistantReady = true;
   injectStyles();
-  attachAssistantButtons();
 
-  const observer = new MutationObserver(() => attachAssistantButtons());
-  observer.observe(document.documentElement, { childList: true, subtree: true });
+  document.addEventListener("contextmenu", (event) => {
+    contextField = getAssistableField(event.target);
+  }, true);
+
+  document.addEventListener("focusin", (event) => {
+    lastFocusedField = getAssistableField(event.target);
+  }, true);
+
+  chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+    handleMessage(message)
+      .then(sendResponse)
+      .catch((error) => {
+        if (!error.chromegptShown) {
+          window.alert(`ChromeGPT could not generate text.\n\n${error.message || error}`);
+        }
+        sendResponse({ ok: false, error: error.message || String(error) });
+      });
+
+    return true;
+  });
+
+  async function handleMessage(message) {
+    if (message?.action === "attachAssistantButtons") {
+      attachAssistantButtons();
+      return { ok: true };
+    }
+
+    if (message?.action === "generateForContextField") {
+      const field = contextField || lastFocusedField || getAssistableField(document.activeElement);
+      if (!field) {
+        throw new Error("ChromeGPT could not find the textbox. Click into the field, then right-click inside it again.");
+      }
+
+      await requestSuggestion(field);
+      return { ok: true };
+    }
+
+    return { ok: false, error: "Unknown action." };
+  }
 
   function attachAssistantButtons() {
     document.querySelectorAll(SUPPORTED_SELECTOR).forEach((field) => {
@@ -40,16 +79,39 @@
   }
 
   function isAssistableField(field) {
+    if (!field || field.nodeType !== Node.ELEMENT_NODE) {
+      return false;
+    }
+
+    if (field.isContentEditable || field.getAttribute("role") === "textbox") {
+      return true;
+    }
+
+    if (!field.matches?.("input, textarea")) {
+      return false;
+    }
+
     const type = (field.getAttribute("type") || "text").toLowerCase();
     return !field.disabled
       && !field.readOnly
       && !["password", "hidden", "checkbox", "radio", "file", "submit"].includes(type);
   }
 
+  function getAssistableField(target) {
+    if (!target?.closest) {
+      return null;
+    }
+
+    const field = target.closest(SUPPORTED_SELECTOR);
+    return isAssistableField(field) ? field : null;
+  }
+
   async function requestSuggestion(field, button) {
-    const previousText = button.textContent;
-    button.disabled = true;
-    button.textContent = "...";
+    const previousText = button?.textContent;
+    if (button) {
+      button.disabled = true;
+      button.textContent = "...";
+    }
 
     try {
       const response = await chrome.runtime.sendMessage({
@@ -72,9 +134,13 @@
       }
     } catch (error) {
       window.alert(`ChromeGPT could not generate a suggestion.\n\n${error.message || error}`);
+      error.chromegptShown = true;
+      throw error;
     } finally {
-      button.disabled = false;
-      button.textContent = previousText;
+      if (button) {
+        button.disabled = false;
+        button.textContent = previousText;
+      }
     }
   }
 
@@ -85,7 +151,7 @@
       label: getLabelText(field),
       placeholder: field.placeholder || "",
       ariaLabel: field.getAttribute("aria-label") || "",
-      value: field.value || ""
+      value: getFieldValue(field)
     };
   }
 
@@ -110,6 +176,18 @@
   }
 
   function insertValue(field, value) {
+    if (field.isContentEditable || field.getAttribute("role") === "textbox") {
+      field.focus();
+      field.textContent = value;
+      field.dispatchEvent(new InputEvent("input", {
+        bubbles: true,
+        inputType: "insertText",
+        data: value
+      }));
+      field.dispatchEvent(new Event("change", { bubbles: true }));
+      return;
+    }
+
     const prototype = field instanceof HTMLTextAreaElement
       ? HTMLTextAreaElement.prototype
       : HTMLInputElement.prototype;
@@ -124,6 +202,14 @@
 
     field.dispatchEvent(new Event("input", { bubbles: true }));
     field.dispatchEvent(new Event("change", { bubbles: true }));
+  }
+
+  function getFieldValue(field) {
+    if (field.isContentEditable || field.getAttribute("role") === "textbox") {
+      return field.innerText || field.textContent || "";
+    }
+
+    return field.value || "";
   }
 
   function injectStyles() {

@@ -3,24 +3,120 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Chat UI</title>
+  <title>ChromeGPT Chat</title>
   <style>
-    .chat-container {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      width: 300px;
-      height: 400px;
-      background-color: #fff;
-      border-radius: 10px;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    :root {
+      color-scheme: light;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      margin: 0;
+      background: #f7f8fb;
+      color: #111827;
+    }
+
+    main {
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      min-height: 100vh;
+    }
+
+    header {
+      border-bottom: 1px solid #d9dee8;
+      background: #ffffff;
+      padding: 16px 20px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 20px;
+    }
+
+    #status {
+      margin: 6px 0 0;
+      min-height: 18px;
+      color: #4b5563;
+      font-size: 13px;
+    }
+
+    #messages {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      padding: 20px;
+      overflow-y: auto;
+    }
+
+    .message {
+      max-width: 760px;
+      border: 1px solid #d9dee8;
+      border-radius: 8px;
+      padding: 12px 14px;
+      white-space: pre-wrap;
+      line-height: 1.45;
+    }
+
+    .user {
+      align-self: flex-end;
+      background: #e8f1ff;
+    }
+
+    .assistant {
+      align-self: flex-start;
+      background: #ffffff;
+    }
+
+    form {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 10px;
+      border-top: 1px solid #d9dee8;
+      background: #ffffff;
+      padding: 14px 20px;
+    }
+
+    textarea {
+      min-height: 54px;
+      max-height: 180px;
+      resize: vertical;
+      padding: 10px;
+      border: 1px solid #aeb7c6;
+      border-radius: 6px;
+      font: inherit;
+    }
+
+    button {
+      min-width: 92px;
+      border: 1px solid #1f2937;
+      border-radius: 6px;
+      background: #1f2937;
+      color: #ffffff;
+      cursor: pointer;
+      font: inherit;
+    }
+
+    button:disabled {
+      cursor: wait;
+      opacity: 0.65;
     }
   </style>
-    <script src="node_modules/ollama/dist/ollama.js"></script>
 </head>
 <body>
-  <div class="chat-container">
-    <!-- Chat UI content goes here -->
-  </div>
+  <main>
+    <header>
+      <h1>ChromeGPT Chat</h1>
+      <p id="status"></p>
+    </header>
+
+    <section id="messages" aria-live="polite"></section>
+
+    <form id="chatForm">
+      <textarea id="prompt" name="prompt" placeholder="Ask your local model..." required></textarea>
+      <button id="send" type="submit">Send</button>
+    </form>
+  </main>
+
+  <script src="src/chat.js"></script>
 </body>
 </html>

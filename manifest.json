@@ -5,6 +5,7 @@
   "manifest_version": 3,
   "permissions": [
     "activeTab",
+    "contextMenus",
     "storage",
     "scripting",
     "tabs"
@@ -25,5 +26,16 @@
   "background": {
     "service_worker": "src/background.js"
   },
+  "content_scripts": [
+    {
+      "matches": [
+        "<all_urls>"
+      ],
+      "js": [
+        "src/contentScript.js"
+      ],
+      "run_at": "document_idle"
+    }
+  ],
   "options_page": "configuration.html"
 }

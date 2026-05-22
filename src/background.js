@@ -3,6 +3,52 @@ const DEFAULT_SETTINGS = {
   model: "llama3.2",
   profileText: ""
 };
+const GENERATE_CONTEXT_MENU_ID = "chromegpt-generate-from-field";
+
+chrome.runtime.onInstalled.addListener(() => {
+  chrome.contextMenus.removeAll(() => {
+    chrome.contextMenus.create({
+      id: GENERATE_CONTEXT_MENU_ID,
+      title: "Generate text with ChromeGPT",
+      contexts: ["editable"]
+    });
+  });
+});
+
+chrome.contextMenus.onClicked.addListener((info, tab) => {
+  if (info.menuItemId !== GENERATE_CONTEXT_MENU_ID || !tab?.id) {
+    return;
+  }
+
+  const frameId = info.frameId || 0;
+  const message = { action: "generateForContextField" };
+  chrome.tabs.sendMessage(tab.id, message, { frameId }, () => {
+    if (!chrome.runtime.lastError) {
+      return;
+    }
+
+    chrome.scripting.executeScript({
+      target: { tabId: tab.id, frameIds: [frameId] },
+      files: ["src/contentScript.js"]
+    }, () => {
+      if (chrome.runtime.lastError) {
+        console.error("ChromeGPT injection failed:", chrome.runtime.lastError.message);
+        return;
+      }
+
+      chrome.tabs.sendMessage(tab.id, message, { frameId }, (response) => {
+        if (chrome.runtime.lastError) {
+          console.error("ChromeGPT message failed:", chrome.runtime.lastError.message);
+          return;
+        }
+
+        if (response && !response.ok) {
+          console.error("ChromeGPT generation failed:", response.error);
+        }
+      });
+    });
+  });
+});
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   handleMessage(message, sender)
@@ -25,6 +71,8 @@ async function handleMessage(message, sender) {
         settings: { ...DEFAULT_SETTINGS, ...(message.settings || {}) }
       });
       return { ok: true };
+    case "testOllama":
+      return testOllamaConnection(message.settings);
     case "generateSuggestion":
       return generateSuggestion(message.payload || {});
     default:
@@ -42,6 +90,8 @@ async function injectAssistant(tabId) {
     files: ["src/contentScript.js"]
   });
 
+  await chrome.tabs.sendMessage(tabId, { action: "attachAssistantButtons" });
+
   return { ok: true };
 }
 
@@ -55,11 +105,21 @@ async function generateSuggestion(payload) {
   const field = payload.field || {};
   const intent = classifyFieldIntent(field);
   const prompt = buildPrompt(settings.profileText, field, intent);
-  const response = await fetch(`${settings.ollamaHost.replace(/\/$/, "")}/api/generate`, {
+  const data = await postGenerate(settings.ollamaHost, settings.model, prompt);
+
+  return {
+    ok: true,
+    intent,
+    suggestion: (data.response || "").trim()
+  };
+}
+
+async function postGenerate(host, model, prompt) {
+  const response = await fetch(`${host.replace(/\/$/, "")}/api/generate`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
-      model: settings.model,
+      model,
       prompt,
       stream: false,
       options: {
@@ -69,15 +129,44 @@ async function generateSuggestion(payload) {
   });
 
   if (!response.ok) {
-    throw new Error(`Ollama request failed with ${response.status}. Is Ollama running?`);
+    const body = await response.text();
+    if (response.status === 403) {
+      throw new Error(getOriginHelpMessage());
+    }
+
+    throw new Error(`Ollama request failed with ${response.status}. ${body || "Is Ollama running and is the model installed?"}`);
+  }
+
+  return response.json();
+}
+
+async function testOllamaConnection(settings = {}) {
+  const mergedSettings = { ...DEFAULT_SETTINGS, ...settings };
+  const response = await fetch(`${mergedSettings.ollamaHost.replace(/\/$/, "")}/api/tags`);
+
+  if (response.status === 403) {
+    throw new Error(getOriginHelpMessage());
+  }
+
+  if (!response.ok) {
+    throw new Error(`Ollama test failed with ${response.status}.`);
   }
 
   const data = await response.json();
+  const models = Array.isArray(data.models) ? data.models.map((model) => model.name) : [];
   return {
     ok: true,
-    intent,
-    suggestion: (data.response || "").trim()
+    models
   };
+}
+
+function getOriginHelpMessage() {
+  return [
+    "Ollama rejected ChromeGPT with 403.",
+    "Ollama must be started with browser-extension origins allowed.",
+    "Use: OLLAMA_ORIGINS='chrome-extension://*' ollama serve",
+    "On macOS with the menu bar app, use: launchctl setenv OLLAMA_ORIGINS 'chrome-extension://*', then restart Ollama."
+  ].join(" ");
 }
 
 function classifyFieldIntent(field) {
@@ -116,16 +205,21 @@ function classifyFieldIntent(field) {
 }
 
 function buildPrompt(profileText, field, intent) {
+  const existingText = field.value?.trim();
+
   return [
     "You are ChromeGPT, a local-first AI form assistant.",
     "Generate concise, accurate text for a browser form field.",
+    "Treat the current field value as the user's prompt, draft, or partial answer.",
+    "If the current value asks for a specific output, follow that instruction.",
+    "If the current value is partial text, complete or improve it.",
     "Do not invent facts. Use the provided user context when relevant.",
     "",
     `Intent: ${intent}`,
     `Field label: ${field.label || "unknown"}`,
     `Field name: ${field.name || "unknown"}`,
     `Placeholder: ${field.placeholder || "none"}`,
-    `Current value: ${field.value || "empty"}`,
+    `Current field value: ${existingText || "empty"}`,
     "",
     "User context:",
     profileText || "No saved profile context.",

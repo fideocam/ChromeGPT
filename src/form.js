@@ -3,6 +3,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   const model = document.getElementById("model");
   const profileText = document.getElementById("profileText");
   const save = document.getElementById("saveSettings");
+  const test = document.getElementById("testOllama");
   const status = document.getElementById("status");
 
   const response = await chrome.runtime.sendMessage({ action: "getSettings" });
@@ -25,5 +26,26 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
 
     status.textContent = result?.ok ? "Settings saved." : result?.error || "Save failed.";
+  });
+
+  test.addEventListener("click", async () => {
+    status.textContent = "Testing Ollama...";
+
+    const result = await chrome.runtime.sendMessage({
+      action: "testOllama",
+      settings: {
+        ollamaHost: host.value.trim() || "http://localhost:11434",
+        model: model.value.trim() || "llama3.2",
+        profileText: profileText.value.trim()
+      }
+    });
+
+    if (result?.ok) {
+      const modelList = result.models.length ? ` Models: ${result.models.join(", ")}` : "";
+      status.textContent = `Ollama connection works.${modelList}`;
+      return;
+    }
+
+    status.textContent = result?.error || "Ollama test failed.";
   });
 });

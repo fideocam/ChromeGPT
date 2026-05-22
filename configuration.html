@@ -41,6 +41,12 @@
     #status {
       min-height: 24px;
     }
+
+    .help {
+      margin: 6px 0 0;
+      color: #4b5563;
+      font-size: 13px;
+    }
   </style>
 </head>
 <body>
@@ -48,6 +54,7 @@
 
   <label for="ollamaHost">Ollama host</label>
   <input type="url" id="ollamaHost" name="ollamaHost" placeholder="http://localhost:11434">
+  <p class="help">Use <code>http://localhost:11434</code> unless you changed the Ollama host.</p>
 
   <label for="model">Model</label>
   <input type="text" id="model" name="model" placeholder="llama3.2">
@@ -56,6 +63,7 @@
   <textarea id="profileText" name="profileText" placeholder="Paste your resume, profile, CRM context, or reusable notes here."></textarea>
 
   <button id="saveSettings" type="button">Save Settings</button>
+  <button id="testOllama" type="button">Test Ollama</button>
   <p id="status"></p>
 
   <script src="src/form.js"></script>
