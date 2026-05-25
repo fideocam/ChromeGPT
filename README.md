@@ -13,7 +13,7 @@ The extension detects supported text inputs on the current page, classifies the 
 - Generates suggestions through a local Ollama server
 - Requires user approval before inserting generated text
 - Provides a local chat page for direct conversation with the configured Ollama model
-- Stores reusable profile/context text in Chrome local storage
+- Stores reusable RAG/grounding text in Chrome local storage
 - Lets users configure the Ollama host and model from the extension settings page
 - Runs without a cloud dependency when Ollama is available locally
 
@@ -77,7 +77,7 @@ If that test returns `403`, ChromeGPT will also be rejected. Fix the Ollama star
 
 1. Start Ollama locally.
 2. Load the `ChromeGPT` folder as an unpacked Chrome extension.
-3. Open the extension settings page and add any reusable profile or resume context.
+3. Open the extension popup and click `Edit RAG Data` to add reusable CV, resume, profile, or other grounding material.
 4. Open a page with form fields.
 5. Type a prompt, draft, or partial answer into a text field.
 6. Right-click inside that field.
@@ -101,7 +101,7 @@ ChromeGPT can currently draft suggestions for:
 
 ## Privacy Model
 
-- Profile context is stored in `chrome.storage.local`.
+- RAG/grounding material is stored in `chrome.storage.local`.
 - Generation requests are sent to the configured Ollama host.
 - The extension does not call a cloud AI provider by default.
 - Suggested text is inserted only after user confirmation.

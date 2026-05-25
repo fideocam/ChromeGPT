@@ -87,16 +87,15 @@ http://localhost:11434
 
 ## Configure ChromeGPT
 
-1. Open the Chrome extensions page.
-2. Find ChromeGPT.
-3. Open the extension details or options page.
+1. Click the ChromeGPT extension icon.
+2. Click `Edit RAG Data`.
 4. Set the Ollama host if needed.
 5. Set the model name.
-6. Paste reusable profile context, such as resume text, professional background, CRM notes, or other reference material.
+6. Paste reusable grounding material, such as CV text, resume content, professional background, CRM notes, writing samples, or other reference material.
 7. Click `Test Ollama`.
 8. Click `Save Settings`.
 
-The profile context is stored in Chrome local storage and is sent only to the configured Ollama host when generating suggestions.
+The grounding material is stored in Chrome local storage and is sent only to the configured Ollama host when generating suggestions.
 
 ## Use ChromeGPT on a Form
 
@@ -125,7 +124,7 @@ The right-click menu is the primary workflow. Inline buttons are only a fallback
 3. Type a message.
 4. Click `Send`.
 
-The chat page uses the same Ollama host, model, and saved profile context as the form assistant.
+The chat page uses the same Ollama host, model, and saved grounding material as the form assistant.
 
 ## Supported Fields
 
@@ -187,7 +186,7 @@ On macOS, if the terminal command still results in `403`, use the `launchctl set
 
 If Chrome reports a permissions issue, reload the unpacked extension from `chrome://extensions`.
 
-If the generated text is too generic, add more specific profile context in the ChromeGPT settings page.
+If the generated text is too generic, add more specific grounding material in the ChromeGPT RAG Data page.
 
 ## Current Limitations
 

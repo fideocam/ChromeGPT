@@ -1,6 +1,7 @@
 document.addEventListener("DOMContentLoaded", () => {
   const button = document.getElementById("scanPage");
   const openChat = document.getElementById("openChat");
+  const editRagData = document.getElementById("editRagData");
   const status = document.getElementById("status");
 
   button.addEventListener("click", async () => {
@@ -28,5 +29,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
   openChat.addEventListener("click", () => {
     chrome.tabs.create({ url: chrome.runtime.getURL("chat.html") });
+  });
+
+  editRagData.addEventListener("click", () => {
+    chrome.tabs.create({ url: chrome.runtime.getURL("configuration.html") });
   });
 });

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ChromeGPT Settings</title>
+  <title>ChromeGPT RAG Data</title>
   <style>
     body {
       max-width: 760px;
@@ -50,7 +50,7 @@
   </style>
 </head>
 <body>
-  <h1>ChromeGPT Settings</h1>
+  <h1>ChromeGPT RAG Data</h1>
 
   <label for="ollamaHost">Ollama host</label>
   <input type="url" id="ollamaHost" name="ollamaHost" placeholder="http://localhost:11434">
@@ -59,8 +59,8 @@
   <label for="model">Model</label>
   <input type="text" id="model" name="model" placeholder="llama3.2">
 
-  <label for="profileText">Profile context</label>
-  <textarea id="profileText" name="profileText" placeholder="Paste your resume, profile, CRM context, or reusable notes here."></textarea>
+  <label for="profileText">Grounding material</label>
+  <textarea id="profileText" name="profileText" placeholder="Paste your CV, resume, profile, CRM context, writing samples, or reusable notes here."></textarea>
 
   <button id="saveSettings" type="button">Save Settings</button>
   <button id="testOllama" type="button">Test Ollama</button>

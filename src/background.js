@@ -222,7 +222,7 @@ function buildPrompt(profileText, field, intent) {
     `Current field value: ${existingText || "empty"}`,
     "",
     "User context:",
-    profileText || "No saved profile context.",
+    profileText || "No saved grounding material.",
     "",
     "Return only the text that should be inserted into the field."
   ].join("\n");
